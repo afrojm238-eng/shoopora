@@ -309,11 +309,9 @@ const FlashDeals = ({ products, onAddToCart, onProductClick }: { products: Produ
           View all <ChevronRight size={18} />
         </button>
       </div>
-      <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-4 lg:grid-cols-6 md:overflow-visible md:pb-0 scrollbar-hide">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {flashProducts.map(product => (
-          <div key={product.id} className="min-w-[160px] md:min-w-0 snap-start shrink-0 md:shrink">
-            <ProductCard product={product} onAddToCart={onAddToCart} onClick={onProductClick} />
-          </div>
+          <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} onClick={onProductClick} />
         ))}
       </div>
     </section>
