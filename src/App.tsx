@@ -134,7 +134,7 @@ const Header = ({
         <div className="flex flex-col items-start shrink-0">
           <div className="flex items-center gap-2 cursor-pointer" onClick={onHomeClick}>
             <div className="text-black font-bold text-2xl tracking-tighter flex items-center">
-              Shoopora
+              Shopoora
             </div>
           </div>
           {/* All Categories Button (Desktop Only) */}
@@ -1119,7 +1119,7 @@ const AdminPage = ({ products, setProducts, banners, setBanners, orders, setOrde
       {/* Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-6 border-b border-gray-100">
-          <div className="text-[#FF4747] font-bold text-xl tracking-tighter">Shoopora Admin</div>
+          <div className="text-[#FF4747] font-bold text-xl tracking-tighter">Shopoora Admin</div>
         </div>
         <nav className="flex-1 p-4 space-y-2">
           {[
@@ -1811,7 +1811,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
                   <Truck className="text-[#FF4747] mt-0.5" size={20} />
                   <div>
                     <p className="text-sm font-bold text-gray-900">Free Shipping</p>
-                    <p className="text-xs text-gray-500">To Bangladesh via Shoopora Standard Shipping</p>
+                    <p className="text-xs text-gray-500">To Bangladesh via Shopoora Standard Shipping</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -2054,7 +2054,7 @@ const CheckoutPage = ({ items, onBack, onOrderComplete, user }: { items: (Produc
               Place Order
             </button>
             <p className="text-[10px] text-gray-400 text-center mt-4 px-4">
-              By placing your order, you agree to Shoopora's Conditions of Use and Privacy Notice.
+              By placing your order, you agree to Shopoora's Conditions of Use and Privacy Notice.
             </p>
           </div>
         </div>
@@ -2546,7 +2546,7 @@ export default function App() {
                 </div>
               </div>
               <div className="border-t pt-8 text-center text-xs text-gray-400">
-                <p>© 2026 Shoopora. All rights reserved.</p>
+                <p>© 2026 Shopoora. All rights reserved.</p>
                 <button 
                   onClick={() => setCurrentPage('admin')}
                   className="mt-2 text-[10px] text-gray-200 hover:text-gray-400 transition-colors"
