@@ -54,6 +54,11 @@ import { Product, Category, Order } from './types';
 import { supabaseService } from './lib/supabaseService';
 import { supabase } from './lib/supabase';
 
+declare global {
+  interface Window {
+  }
+}
+
 // --- Mock Data ---
 const CATEGORIES: Category[] = [
   { id: '1', name: "Women's Fashion", icon: '👗' },
