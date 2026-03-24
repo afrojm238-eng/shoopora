@@ -200,15 +200,24 @@ const HeroSlider = ({ onShopNow, slides }: { onShopNow: () => void, slides: { co
   if (!slides || slides.length === 0) return null;
 
   return (
-    <div className="relative h-[180px] md:h-[400px] rounded-xl overflow-hidden group">
+    <div className="relative h-[180px] md:h-[400px] rounded-xl overflow-hidden group touch-none">
       <AnimatePresence mode="wait">
         <motion.div
           key={current}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className={cn("absolute inset-0 flex items-center px-8 md:px-20", slides[current].color)}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.4 }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            if (info.offset.x > 100) {
+              setCurrent(s => (s - 1 + slides.length) % slides.length);
+            } else if (info.offset.x < -100) {
+              setCurrent(s => (s + 1) % slides.length);
+            }
+          }}
+          className={cn("absolute inset-0 flex items-center px-8 md:px-20 cursor-grab active:cursor-grabbing", slides[current].color)}
         >
           <div className="text-white max-w-md">
             <motion.h2 
@@ -300,9 +309,11 @@ const FlashDeals = ({ products, onAddToCart, onProductClick }: { products: Produ
           View all <ChevronRight size={18} />
         </button>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-4 lg:grid-cols-6 md:overflow-visible md:pb-0 scrollbar-hide">
         {flashProducts.map(product => (
-          <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} onClick={onProductClick} />
+          <div key={product.id} className="min-w-[160px] md:min-w-0 snap-start shrink-0 md:shrink">
+            <ProductCard product={product} onAddToCart={onAddToCart} onClick={onProductClick} />
+          </div>
         ))}
       </div>
     </section>
@@ -1705,17 +1716,26 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
           <div className="flex flex-col min-h-full">
             {/* Image Section - Slider */}
             <div className="w-full bg-white flex items-center justify-center relative shrink-0 border-b border-gray-100 group">
-              <div className="relative w-full aspect-square md:aspect-auto md:h-[60vh] overflow-hidden">
+              <div className="relative w-full aspect-square md:aspect-auto md:h-[60vh] overflow-hidden touch-none">
                 <AnimatePresence mode="wait">
                   <motion.img 
                     key={currentImageIndex}
                     src={images[currentImageIndex]} 
                     alt={`${product.title} - ${currentImageIndex + 1}`} 
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    exit={{ opacity: 0, x: -50 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full h-full object-contain p-4 md:p-8"
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    onDragEnd={(_, info) => {
+                      if (info.offset.x > 50) {
+                        prevImage();
+                      } else if (info.offset.x < -50) {
+                        nextImage();
+                      }
+                    }}
+                    className="w-full h-full object-contain p-4 md:p-8 cursor-grab active:cursor-grabbing"
                     referrerPolicy="no-referrer"
                   />
                 </AnimatePresence>
