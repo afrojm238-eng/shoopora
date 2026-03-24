@@ -2071,8 +2071,13 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [showThankYou, setShowThankYou] = useState(false);
   const [currentPage, setCurrentPage] = useState<'home' | 'account' | 'cart' | 'checkout' | 'admin'>('home');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [products, setProducts] = useState<Product[]>(() => {
+    const saved = localStorage.getItem('cached_products');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [isLoadingProducts, setIsLoadingProducts] = useState(products.length === 0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [banners, setBanners] = useState<{ color: string, title: string, sub: string }[]>(() => {
     const saved = localStorage.getItem('local_banners');
     return saved ? JSON.parse(saved) : [
@@ -2110,21 +2115,61 @@ export default function App() {
     };
     trackVisit();
 
-    const fetchProducts = async () => {
-      setIsLoadingProducts(true);
+    const fetchProducts = async (isInitial = true) => {
+      if (isInitial) {
+        if (products.length === 0) setIsLoadingProducts(true);
+      } else {
+        setIsFetchingMore(true);
+      }
+
       try {
-        const data = await supabaseService.getProducts();
-        setProducts(data);
+        const limit = 20;
+        const offset = isInitial ? 0 : products.length;
+        const data = await supabaseService.getProducts(limit, offset);
+        
+        if (isInitial) {
+          setProducts(data);
+          localStorage.setItem('cached_products', JSON.stringify(data));
+          setHasMore(data.length === limit);
+        } else {
+          setProducts(prev => {
+            const newProducts = [...prev, ...data];
+            // Update cache with all products for now, or just the first page
+            localStorage.setItem('cached_products', JSON.stringify(newProducts.slice(0, 20)));
+            return newProducts;
+          });
+          setHasMore(data.length === limit);
+        }
       } catch (error: any) {
         console.error('Error fetching products:', error);
-        // Fallback to initial products only on error if desired, 
-        // but better to keep it empty or show error
       } finally {
         setIsLoadingProducts(false);
+        setIsFetchingMore(false);
       }
     };
-    fetchProducts();
+    fetchProducts(true);
   }, []);
+
+  // Infinite scroll trigger
+  useEffect(() => {
+    if (inView && hasMore && !isFetchingMore && !isLoadingProducts && !searchQuery && !selectedCategory) {
+      const fetchMore = async () => {
+        setIsFetchingMore(true);
+        try {
+          const limit = 20;
+          const offset = products.length;
+          const data = await supabaseService.getProducts(limit, offset);
+          setProducts(prev => [...prev, ...data]);
+          setHasMore(data.length === limit);
+        } catch (error) {
+          console.error('Error fetching more products:', error);
+        } finally {
+          setIsFetchingMore(false);
+        }
+      };
+      fetchMore();
+    }
+  }, [inView, hasMore, isFetchingMore, isLoadingProducts, searchQuery, selectedCategory]);
 
   // Centralized reactive order fetching
   useEffect(() => {
@@ -2411,8 +2456,8 @@ export default function App() {
                         <p>No products found matching your criteria.</p>
                       </div>
                     )}
-                    
-                    {!searchQuery && !selectedCategory && filteredProducts.length > 20 && (
+                    {/* Infinite loading spinner */}
+                    {!searchQuery && !selectedCategory && hasMore && (
                       <div ref={ref} className="py-12 flex justify-center">
                         <div className="w-8 h-8 border-4 border-[#FF4747] border-t-transparent rounded-full animate-spin" />
                       </div>

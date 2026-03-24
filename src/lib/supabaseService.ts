@@ -3,19 +3,28 @@ import { Product, Order } from '../types';
 
 export const supabaseService = {
   // Products
-  async getProducts(): Promise<Product[]> {
+  async getProducts(limit?: number, offset?: number): Promise<Product[]> {
     try {
-      const response = await fetch('/api/products');
+      const url = limit ? `/api/products?limit=${limit}&offset=${offset || 0}` : '/api/products';
+      const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch products from server');
       const data = await response.json();
       console.log('Fetched products:', data?.length || 0);
       return data || [];
     } catch (error) {
       console.warn('Server fetch failed, falling back to direct Supabase call:', error);
-      const { data, error: sbError } = await supabase
+      let query = supabase
         .from('products')
         .select('*')
         .order('id', { ascending: false });
+      
+      if (limit) {
+        const l = limit;
+        const o = offset || 0;
+        query = query.range(o, o + l - 1);
+      }
+      
+      const { data, error: sbError } = await query;
       
       if (sbError) {
         console.error('Supabase direct fetch error:', sbError);

@@ -15,8 +15,17 @@ async function startServer() {
 
   // API Proxy for Supabase to avoid CORS issues
   app.get("/api/products", async (req, res) => {
+    const { limit, offset } = req.query;
     try {
-      const { data, error } = await supabase.from('products').select('*').order('id', { ascending: false });
+      let query = supabase.from('products').select('*').order('id', { ascending: false });
+      
+      if (limit) {
+        const l = parseInt(limit as string);
+        const o = parseInt((offset as string) || '0');
+        query = query.range(o, o + l - 1);
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
       res.json(data);
     } catch (error: any) {
