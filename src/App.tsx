@@ -2264,6 +2264,10 @@ export default function App() {
   };
 
   const handleBuyNow = (product: Product) => {
+    if (!isLoggedIn) {
+      setCurrentPage('account');
+      return;
+    }
     setCheckoutItems([{ ...product, quantity: 1 }]);
     setCurrentPage('checkout');
   };
@@ -2287,6 +2291,10 @@ export default function App() {
 
   const handleCartCheckout = () => {
     if (cart.length === 0) return;
+    if (!isLoggedIn) {
+      setCurrentPage('account');
+      return;
+    }
     setCheckoutItems([...cart]);
     setCurrentPage('checkout');
   };
@@ -2302,16 +2310,20 @@ export default function App() {
   };
 
   const handleLoginSuccess = async (user: any) => {
-    // Clear session-specific state
-    setCart([]);
+    setIsLoggedIn(true);
+    setUser(user);
+    
+    // If we have items ready for checkout, go there
+    if (checkoutItems.length > 0) {
+      setCurrentPage('checkout');
+    } else {
+      setCurrentPage('home');
+    }
+    
+    // Clear other transient UI states
     setSearchQuery('');
     setSelectedCategory(null);
     setSelectedProduct(null);
-    setCheckoutItems([]);
-    
-    setIsLoggedIn(true);
-    setUser(user);
-    setCurrentPage('home');
   };
 
   const handleLogout = async () => {
@@ -2500,12 +2512,16 @@ export default function App() {
                   onCheckout={handleCartCheckout}
                 />
               ) : (
-                <CheckoutPage 
-                  items={checkoutItems} 
-                  onBack={() => setCurrentPage('cart')} 
-                  onOrderComplete={handleOrderComplete}
-                  user={user}
-                />
+                isLoggedIn ? (
+                  <CheckoutPage 
+                    items={checkoutItems} 
+                    onBack={() => setCurrentPage('cart')} 
+                    onOrderComplete={handleOrderComplete}
+                    user={user}
+                  />
+                ) : (
+                  <AuthPage onLogin={handleLoginSuccess} onBack={() => setCurrentPage('home')} />
+                )
               )
               }
             </div>
