@@ -572,6 +572,75 @@ const CartPage = ({ cart, onRemove, onUpdateQuantity, onCheckout }: { cart: (Pro
   );
 };
 
+const AboutPage = ({ onBack }: { onBack: () => void }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-4xl mx-auto pb-20 px-4"
+    >
+      <div className="flex items-center gap-4 mb-8">
+        <button onClick={onBack} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+          <X size={24} />
+        </button>
+        <h2 className="text-2xl font-bold">About Us</h2>
+      </div>
+
+      <div className="bg-white p-8 rounded-3xl shadow-sm border border-black/5 space-y-8">
+        <section>
+          <h1 className="text-3xl font-black text-gray-900 mb-4">About Us</h1>
+          <p className="text-gray-600 leading-relaxed">
+            Welcome to shopoora your premier destination for high-quality and trending products curated from around the world. We specialize in bringing you the best finds from global marketplaces delivered directly to your doorstep with a focus on quality, reliability, and style.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">Who We Are</h2>
+          <p className="text-gray-600 leading-relaxed">
+            At shopoora we are passionate about finding innovative and useful products that make your life easier and more enjoyable. We understand the challenges of online shopping, which is why we’ve dedicated ourselves to handpicking items that meet our high standards for performance and value.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">Our Mission</h2>
+          <p className="text-gray-600 leading-relaxed">
+            Our mission is simple: to provide our customers with an exceptional shopping experience. We bridge the gap between global manufacturers and your home, ensuring that you get access to the latest trends without the hassle. We believe that quality should be accessible to everyone, no matter where they are.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">Why Choose Us?</h2>
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-bold text-gray-800">Curated Selection:</h3>
+              <p className="text-gray-600 text-sm">Every product in our store has been carefully selected and vetted for quality.</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-800">Secure Shopping:</h3>
+              <p className="text-gray-600 text-sm">Your security is our priority. We use industry-leading encryption and payment gateways to ensure your data is always safe.</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-800">Customer-Centric Support:</h3>
+              <p className="text-gray-600 text-sm">Have a question? Our team is always here to help. We believe in building long-term relationships with our customers through transparency and honesty.</p>
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-800">Global Reach, Local Feel:</h3>
+              <p className="text-gray-600 text-sm">While we source products internationally, our service is tailored to provide a seamless and familiar experience for our American customers.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="pt-6 border-t border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-3">Our Promise</h2>
+          <p className="text-gray-600 leading-relaxed italic">
+            "We are more than just an e-commerce store; we are a community of enthusiasts who love great products. We stand behind everything we sell and are committed to your satisfaction. If you’re not happy, we’re not happy"
+          </p>
+        </section>
+      </div>
+    </motion.div>
+  );
+};
+
 const AuthPage = ({ onLogin, onBack }: { onLogin: (user: any) => void, onBack: () => void }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -2107,7 +2176,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [showThankYou, setShowThankYou] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'home' | 'account' | 'cart' | 'checkout' | 'admin'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'account' | 'cart' | 'checkout' | 'admin' | 'about'>('home');
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('cached_products');
     return saved ? JSON.parse(saved) : [];
@@ -2555,6 +2624,8 @@ export default function App() {
                   onUpdateQuantity={handleUpdateQuantity}
                   onCheckout={handleCartCheckout}
                 />
+              ) : currentPage === 'about' ? (
+                <AboutPage onBack={() => setCurrentPage('home')} />
               ) : (
                 isLoggedIn ? (
                   <CheckoutPage 
@@ -2573,17 +2644,30 @@ export default function App() {
           </div>
         </main>
         
-        {/* Footer (Desktop) */}
+        {/* Footer */}
         {currentPage === 'home' && (
-          <footer className="hidden md:block bg-white border-t border-black/5 mt-12 py-12">
+          <footer className="bg-white border-t border-black/5 mt-12 py-12">
             <div className="w-full px-6">
-              <div className="flex flex-col items-center mb-12">
+              <div className="flex flex-col md:flex-row justify-center gap-12 md:gap-24 mb-12">
                 <div className="text-center">
-                  <h4 className="font-bold mb-4">Customer Service</h4>
+                  <h4 className="font-bold mb-4 text-lg">Customer Service</h4>
                   <ul className="text-sm text-gray-500 space-y-2">
                     <li>Help Center</li>
                     <li>Transaction Services Agreement</li>
                     <li>Take our feedback survey</li>
+                  </ul>
+                </div>
+                <div className="text-center">
+                  <h4 
+                    onClick={() => setCurrentPage('about')}
+                    className="font-bold mb-4 text-lg cursor-pointer hover:text-[#FF4747] transition-colors"
+                  >
+                    About Us
+                  </h4>
+                  <ul className="text-sm text-gray-500 space-y-2">
+                    <li onClick={() => setCurrentPage('about')} className="cursor-pointer hover:text-[#FF4747]">Our Story</li>
+                    <li onClick={() => setCurrentPage('about')} className="cursor-pointer hover:text-[#FF4747]">Mission & Vision</li>
+                    <li onClick={() => setCurrentPage('about')} className="cursor-pointer hover:text-[#FF4747]">Why Choose Us</li>
                   </ul>
                 </div>
               </div>
