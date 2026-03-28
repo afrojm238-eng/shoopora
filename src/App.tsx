@@ -49,7 +49,6 @@ import {
   Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useInView } from 'react-intersection-observer';
 import { cn } from './utils';
 import { Product, Category, Order } from './types';
 import { supabaseService } from './lib/supabaseService';
@@ -2136,7 +2135,6 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [checkoutItems, setCheckoutItems] = useState<(Product & { quantity: number })[]>([]);
   
-  const { ref, inView } = useInView();
   const productsRef = useRef<HTMLDivElement>(null);
   const hasTracked = useRef(false);
 
@@ -2161,7 +2159,7 @@ export default function App() {
       }
 
       try {
-        const limit = 20;
+        const limit = 10;
         const offset = isInitial ? 0 : products.length;
         const data = await supabaseService.getProducts(limit, offset);
         
@@ -2173,7 +2171,7 @@ export default function App() {
           setProducts(prev => {
             const newProducts = [...prev, ...data];
             // Update cache with all products for now, or just the first page
-            localStorage.setItem('cached_products', JSON.stringify(newProducts.slice(0, 20)));
+            localStorage.setItem('cached_products', JSON.stringify(newProducts.slice(0, 10)));
             return newProducts;
           });
           setHasMore(data.length === limit);
@@ -2188,26 +2186,22 @@ export default function App() {
     fetchProducts(true);
   }, []);
 
-  // Infinite scroll trigger
-  useEffect(() => {
-    if (inView && hasMore && !isFetchingMore && !isLoadingProducts && !searchQuery && !selectedCategory) {
-      const fetchMore = async () => {
-        setIsFetchingMore(true);
-        try {
-          const limit = 20;
-          const offset = products.length;
-          const data = await supabaseService.getProducts(limit, offset);
-          setProducts(prev => [...prev, ...data]);
-          setHasMore(data.length === limit);
-        } catch (error) {
-          console.error('Error fetching more products:', error);
-        } finally {
-          setIsFetchingMore(false);
-        }
-      };
-      fetchMore();
+  const handleViewMore = async () => {
+    if (isFetchingMore || !hasMore) return;
+    
+    setIsFetchingMore(true);
+    try {
+      const limit = 20; // Load more in larger chunks
+      const offset = products.length;
+      const data = await supabaseService.getProducts(limit, offset);
+      setProducts(prev => [...prev, ...data]);
+      setHasMore(data.length === limit);
+    } catch (error) {
+      console.error('Error fetching more products:', error);
+    } finally {
+      setIsFetchingMore(false);
     }
-  }, [inView, hasMore, isFetchingMore, isLoadingProducts, searchQuery, selectedCategory]);
+  };
 
   // Centralized reactive order fetching
   useEffect(() => {
@@ -2511,10 +2505,22 @@ export default function App() {
                         <p>No products found matching your criteria.</p>
                       </div>
                     )}
-                    {/* Infinite loading spinner */}
+                    {/* View More Button */}
                     {!searchQuery && !selectedCategory && hasMore && (
-                      <div ref={ref} className="py-12 flex justify-center">
-                        <div className="w-8 h-8 border-4 border-[#FF4747] border-t-transparent rounded-full animate-spin" />
+                      <div className="py-12 flex flex-col items-center gap-4">
+                        {isFetchingMore ? (
+                          <div className="w-8 h-8 border-4 border-[#FF4747] border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <button 
+                            onClick={handleViewMore}
+                            className="group flex flex-col items-center gap-2 transition-all active:scale-95"
+                          >
+                            <span className="text-sm font-bold text-gray-500 group-hover:text-[#FF4747]">View More</span>
+                            <div className="w-10 h-10 bg-white shadow-md border border-gray-100 rounded-full flex items-center justify-center text-gray-400 group-hover:text-[#FF4747] group-hover:border-[#FF4747]/20 transition-all">
+                              <ChevronDown size={20} className="group-hover:translate-y-0.5 transition-transform" />
+                            </div>
+                          </button>
+                        )}
                       </div>
                     )}
                   </section>
