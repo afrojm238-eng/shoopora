@@ -21,6 +21,7 @@ import {
   ChevronDown,
   X,
   Plus,
+  Minus,
   CreditCard,
   Package,
   Truck,
@@ -1872,7 +1873,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
   );
 };
 
-const CheckoutPage = ({ items, onBack, onOrderComplete, user }: { items: (Product & { quantity: number })[], onBack: () => void, onOrderComplete: (order: any) => void, user: any }) => {
+const CheckoutPage = ({ items, onBack, onOrderComplete, onUpdateQuantity, user }: { items: (Product & { quantity: number })[], onBack: () => void, onOrderComplete: (order: any) => void, onUpdateQuantity: (id: number, q: number) => void, user: any }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('Bangladesh');
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
@@ -2030,7 +2031,23 @@ const CheckoutPage = ({ items, onBack, onOrderComplete, user }: { items: (Produc
                     <h4 className="text-sm font-medium text-gray-800 line-clamp-2 mb-1">{item.title}</h4>
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-bold text-[#FF4747]">${item.price.toFixed(2)}</span>
-                      <span className="text-xs text-gray-400">x{item.quantity}</span>
+                      <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1 border border-black/5">
+                        <button 
+                          type="button"
+                          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                          className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm text-gray-400 hover:text-[#FF4747] transition-all"
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
+                        <button 
+                          type="button"
+                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                          className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm text-gray-400 hover:text-[#FF4747] transition-all"
+                        >
+                          <Plus size={12} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2249,6 +2266,11 @@ export default function App() {
   const handleUpdateQuantity = (id: number, q: number) => {
     if (q < 1) return;
     setCart(prev => prev.map(item => item.id === id ? { ...item, quantity: q } : item));
+  };
+
+  const handleUpdateCheckoutQuantity = (id: number, q: number) => {
+    if (q < 1) return;
+    setCheckoutItems(prev => prev.map(item => item.id === id ? { ...item, quantity: q } : item));
   };
 
   const handleSearch = (query: string) => {
@@ -2517,6 +2539,7 @@ export default function App() {
                     items={checkoutItems} 
                     onBack={() => setCurrentPage('cart')} 
                     onOrderComplete={handleOrderComplete}
+                    onUpdateQuantity={handleUpdateCheckoutQuantity}
                     user={user}
                   />
                 ) : (
