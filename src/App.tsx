@@ -1759,19 +1759,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
                       <ChevronRight size={20} />
                     </button>
                     
-                    {/* Dots */}
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
-                      {images.map((_, idx) => (
-                        <button 
-                          key={idx}
-                          onClick={() => setCurrentImageIndex(idx)}
-                          className={cn(
-                            "w-2 h-2 rounded-full transition-all",
-                            currentImageIndex === idx ? "bg-[#FF4747] w-4" : "bg-gray-300"
-                          )}
-                        />
-                      ))}
-                    </div>
+                    {/* Thumbnails moved outside the absolute container to be below the image */}
                   </>
                 )}
               </div>
@@ -1782,6 +1770,34 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
                 </div>
               )}
             </div>
+
+            {/* Dynamic Thumbnail Gallery */}
+            {images.length > 1 && (
+              <div className="flex gap-3 px-6 py-4 overflow-x-auto no-scrollbar bg-white border-b border-gray-50">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={cn(
+                      "relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all duration-200",
+                      currentImageIndex === idx 
+                        ? "border-[#FF4747] shadow-md scale-105" 
+                        : "border-transparent hover:border-gray-200 opacity-70 hover:opacity-100"
+                    )}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`Thumbnail ${idx + 1}`} 
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                    {currentImageIndex === idx && (
+                      <div className="absolute inset-0 bg-[#FF4747]/5" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Content Section - Now below the image for all screens */}
             <div className="flex-1 p-6 md:p-10 md:max-w-4xl md:mx-auto w-full space-y-8 bg-white">
