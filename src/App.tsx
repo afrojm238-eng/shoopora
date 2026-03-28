@@ -2577,38 +2577,14 @@ export default function App() {
         {currentPage === 'home' && (
           <footer className="hidden md:block bg-white border-t border-black/5 mt-12 py-12">
             <div className="w-full px-6">
-              <div className="grid grid-cols-4 gap-8 mb-12">
-                <div>
+              <div className="flex flex-col items-center mb-12">
+                <div className="text-center">
                   <h4 className="font-bold mb-4">Customer Service</h4>
                   <ul className="text-sm text-gray-500 space-y-2">
                     <li>Help Center</li>
                     <li>Transaction Services Agreement</li>
                     <li>Take our feedback survey</li>
                   </ul>
-                </div>
-                <div>
-                  <h4 className="font-bold mb-4">Shopping with us</h4>
-                  <ul className="text-sm text-gray-500 space-y-2">
-                    <li>Making payments</li>
-                    <li>Delivery options</li>
-                    <li>Buyer Protection</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-bold mb-4">Collaborate with us</h4>
-                  <ul className="text-sm text-gray-500 space-y-2">
-                    <li>Partnerships</li>
-                    <li>Affiliate program</li>
-                    <li>DS Center</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-bold mb-4">Stay Connected</h4>
-                  <div className="flex gap-4">
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#FF4747] hover:text-white transition-colors">f</div>
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#FF4747] hover:text-white transition-colors">t</div>
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-[#FF4747] hover:text-white transition-colors">i</div>
-                  </div>
                 </div>
               </div>
               <div className="border-t pt-8 text-center text-xs text-gray-400">
