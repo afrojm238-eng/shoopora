@@ -695,6 +695,90 @@ const ShippingPolicyPage = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
+const PrivacyPolicyPage = ({ onBack }: { onBack: () => void }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-4xl mx-auto pb-20 px-4"
+    >
+      <div className="flex items-center gap-4 mb-8">
+        <button onClick={onBack} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+          <X size={24} />
+        </button>
+        <h2 className="text-2xl font-bold">Privacy Policy</h2>
+      </div>
+
+      <div className="bg-white p-8 rounded-3xl shadow-sm border border-black/5 space-y-8">
+        <section>
+          <h1 className="text-3xl font-black text-gray-900 mb-4">Privacy Policy</h1>
+          <p className="text-gray-600 leading-relaxed">
+            At shopoora accessible one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by us and how we use it.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">1. Information We Collect</h2>
+          <p className="text-gray-600 leading-relaxed mb-4">
+            When you visit our store or make a purchase, we collect certain information to fulfill your order and improve your experience:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm">
+            <li><strong>Personal Information:</strong> Name, shipping address, billing address, email address, and phone number.</li>
+            <li><strong>Payment Information:</strong> We process payments through secure gateways (like Payoneer or 2Checkout). We do not store your full credit card details on our servers.</li>
+            <li><strong>Log Files:</strong> Like many other websites, we collect information that your browser sends whenever you visit our site (IP address, browser type, pages visited).</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">2. How We Use Your Information</h2>
+          <p className="text-gray-600 leading-relaxed mb-4">
+            We use the information we collect in various ways, including to:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm">
+            <li>Process and ship your orders.</li>
+            <li>Communicate with you regarding your order status.</li>
+            <li>Send you promotional emails (only if you opt-in).</li>
+            <li>Prevent fraudulent transactions and enhance site security.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">3. Sharing Your Information</h2>
+          <p className="text-gray-600 leading-relaxed mb-4">
+            We only share your information with third-party services that are essential for our business operations:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 text-gray-600 text-sm">
+            <li><strong>Suppliers:</strong> We share your shipping details with our fulfillment partners to deliver your products.</li>
+            <li><strong>Payment Processors:</strong> To process your transactions securely.</li>
+            <li><strong>Analytics:</strong> To understand how customers use our site.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">4. Cookies</h2>
+          <p className="text-gray-600 leading-relaxed">
+            We use 'cookies' to store information about visitors' preferences and the pages on the website that the visitor accessed. This information is used to optimize the users' experience by customizing our web page content.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-gray-900 mb-3">5. Your Rights</h2>
+          <p className="text-gray-600 leading-relaxed">
+            If you are a resident of certain regions (like California or Europe), you have the right to access the personal information we hold about you and to ask that your personal information be corrected, updated, or deleted.
+          </p>
+        </section>
+
+        <section className="pt-6 border-t border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-3">6. Security</h2>
+          <p className="text-gray-600 leading-relaxed">
+            The security of your personal information is important to us. We use SSL (Secure Sockets Layer) technology to ensure that your data is encrypted and protected during transmission.
+          </p>
+        </section>
+      </div>
+    </motion.div>
+  );
+};
+
 const AuthPage = ({ onLogin, onBack }: { onLogin: (user: any) => void, onBack: () => void }) => {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -2230,7 +2314,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [showThankYou, setShowThankYou] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'home' | 'account' | 'cart' | 'checkout' | 'admin' | 'about' | 'shipping-policy'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'account' | 'cart' | 'checkout' | 'admin' | 'about' | 'shipping-policy' | 'privacy-policy'>('home');
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('cached_products');
     return saved ? JSON.parse(saved) : [];
@@ -2682,6 +2766,8 @@ export default function App() {
                 <AboutPage onBack={() => setCurrentPage('home')} />
               ) : currentPage === 'shipping-policy' ? (
                 <ShippingPolicyPage onBack={() => setCurrentPage('home')} />
+              ) : currentPage === 'privacy-policy' ? (
+                <PrivacyPolicyPage onBack={() => setCurrentPage('home')} />
               ) : (
                 isLoggedIn ? (
                   <CheckoutPage 
@@ -2706,14 +2792,6 @@ export default function App() {
             <div className="w-full px-6">
               <div className="flex flex-col md:flex-row justify-center gap-12 md:gap-24 mb-12">
                 <div className="text-center">
-                  <h4 className="font-bold mb-4 text-lg">Customer Service</h4>
-                  <ul className="text-sm text-gray-500 space-y-2">
-                    <li>Help Center</li>
-                    <li>Transaction Services Agreement</li>
-                    <li>Take our feedback survey</li>
-                  </ul>
-                </div>
-                <div className="text-center">
                   <h4 
                     onClick={() => setCurrentPage('about')}
                     className="font-bold mb-4 text-lg cursor-pointer hover:text-[#FF4747] transition-colors"
@@ -2737,6 +2815,19 @@ export default function App() {
                     <li onClick={() => setCurrentPage('shipping-policy')} className="cursor-pointer hover:text-[#FF4747]">Fast Shipping</li>
                     <li onClick={() => setCurrentPage('shipping-policy')} className="cursor-pointer hover:text-[#FF4747]">Order Processing</li>
                     <li onClick={() => setCurrentPage('shipping-policy')} className="cursor-pointer hover:text-[#FF4747]">Tracking</li>
+                  </ul>
+                </div>
+                <div className="text-center">
+                  <h4 
+                    onClick={() => setCurrentPage('privacy-policy')}
+                    className="font-bold mb-4 text-lg cursor-pointer hover:text-[#FF4747] transition-colors"
+                  >
+                    Privacy Policy
+                  </h4>
+                  <ul className="text-sm text-gray-500 space-y-2">
+                    <li onClick={() => setCurrentPage('privacy-policy')} className="cursor-pointer hover:text-[#FF4747]">Data Collection</li>
+                    <li onClick={() => setCurrentPage('privacy-policy')} className="cursor-pointer hover:text-[#FF4747]">How We Use It</li>
+                    <li onClick={() => setCurrentPage('privacy-policy')} className="cursor-pointer hover:text-[#FF4747]">Your Rights</li>
                   </ul>
                 </div>
               </div>
