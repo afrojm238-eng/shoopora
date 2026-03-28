@@ -486,7 +486,7 @@ const BottomNav = ({ onCategoryClick, onHomeClick, onAccountClick, onCartClick, 
   </nav>
 );
 
-const CartPage = ({ cart, onRemove, onUpdateQuantity, onCheckout }: { cart: (Product & { quantity: number })[], onRemove: (id: number) => void, onUpdateQuantity: (id: number, q: number) => void, onCheckout: () => void }) => {
+const CartPage = ({ cart, onRemove, onUpdateQuantity, onCheckout }: { cart: (Product & { quantity: number })[], onRemove: (id: number, image: string) => void, onUpdateQuantity: (id: number, image: string, q: number) => void, onCheckout: () => void }) => {
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   if (cart.length === 0) {
@@ -511,8 +511,8 @@ const CartPage = ({ cart, onRemove, onUpdateQuantity, onCheckout }: { cart: (Pro
       </div>
 
       <div className="space-y-4">
-        {cart.map((item) => (
-          <div key={item.id} className="bg-white rounded-xl p-4 shadow-sm border border-black/5 flex gap-4">
+        {cart.map((item, idx) => (
+          <div key={`${item.id}-${idx}`} className="bg-white rounded-xl p-4 shadow-sm border border-black/5 flex gap-4">
             <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-100">
               <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
             </div>
@@ -521,7 +521,7 @@ const CartPage = ({ cart, onRemove, onUpdateQuantity, onCheckout }: { cart: (Pro
                 <div>
                   <h3 className="text-sm font-medium line-clamp-2 mb-1">{item.title}</h3>
                 </div>
-                <button onClick={() => onRemove(item.id)} className="text-gray-400 hover:text-[#FF4747]">
+                <button onClick={() => onRemove(item.id, item.image)} className="text-gray-400 hover:text-[#FF4747]">
                   <X size={18} />
                 </button>
               </div>
@@ -529,14 +529,14 @@ const CartPage = ({ cart, onRemove, onUpdateQuantity, onCheckout }: { cart: (Pro
                 <div className="text-[#FF4747] font-bold text-lg">${item.price.toFixed(2)}</div>
                 <div className="flex items-center border border-gray-200 rounded-full px-3 py-1 gap-4">
                   <button 
-                    onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                    onClick={() => onUpdateQuantity(item.id, item.image, item.quantity - 1)}
                     className="text-gray-400 hover:text-black"
                   >
                     -
                   </button>
                   <span className="text-sm font-medium">{item.quantity}</span>
                   <button 
-                    onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => onUpdateQuantity(item.id, item.image, item.quantity + 1)}
                     className="text-gray-400 hover:text-black"
                   >
                     +
@@ -1867,7 +1867,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
         <div className="p-6 border-t bg-white flex gap-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] shrink-0">
           <button 
             onClick={() => {
-              onAddToCart(product);
+              onAddToCart({ ...product, image: images[currentImageIndex] });
               onClose();
             }}
             className="flex-1 py-4 border-2 border-[#FF4747] text-[#FF4747] font-bold rounded-full hover:bg-[#FF4747]/5 transition-all active:scale-95"
@@ -1876,7 +1876,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
           </button>
           <button 
             onClick={() => {
-              onBuyNow(product);
+              onBuyNow({ ...product, image: images[currentImageIndex] });
               onClose();
             }}
             className="flex-1 py-4 bg-[#FF4747] text-white font-bold rounded-full hover:bg-[#e63e3e] transition-all shadow-lg shadow-[#FF4747]/30 active:scale-95"
@@ -1889,7 +1889,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart, onBuyNow }: { produ
   );
 };
 
-const CheckoutPage = ({ items, onBack, onOrderComplete, onUpdateQuantity, user }: { items: (Product & { quantity: number })[], onBack: () => void, onOrderComplete: (order: any) => void, onUpdateQuantity: (id: number, q: number) => void, user: any }) => {
+const CheckoutPage = ({ items, onBack, onOrderComplete, onUpdateQuantity, user }: { items: (Product & { quantity: number })[], onBack: () => void, onOrderComplete: (order: any) => void, onUpdateQuantity: (id: number, image: string, q: number) => void, user: any }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('Bangladesh');
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
@@ -2050,7 +2050,7 @@ const CheckoutPage = ({ items, onBack, onOrderComplete, onUpdateQuantity, user }
                       <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1 border border-black/5">
                         <button 
                           type="button"
-                          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => onUpdateQuantity(item.id, item.image, item.quantity - 1)}
                           className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm text-gray-400 hover:text-[#FF4747] transition-all"
                         >
                           <Minus size={12} />
@@ -2058,7 +2058,7 @@ const CheckoutPage = ({ items, onBack, onOrderComplete, onUpdateQuantity, user }
                         <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
                         <button 
                           type="button"
-                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => onUpdateQuantity(item.id, item.image, item.quantity + 1)}
                           className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm text-gray-400 hover:text-[#FF4747] transition-all"
                         >
                           <Plus size={12} />
@@ -2267,26 +2267,26 @@ export default function App() {
 
   const handleAddToCart = (product: Product) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(item => item.id === product.id && item.image === product.image);
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+        return prev.map(item => (item.id === product.id && item.image === product.image) ? { ...item, quantity: item.quantity + 1 } : item);
       }
       return [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  const handleRemoveFromCart = (id: number) => {
-    setCart(prev => prev.filter(item => item.id !== id));
+  const handleRemoveFromCart = (id: number, image: string) => {
+    setCart(prev => prev.filter(item => !(item.id === id && item.image === image)));
   };
 
-  const handleUpdateQuantity = (id: number, q: number) => {
+  const handleUpdateQuantity = (id: number, image: string, q: number) => {
     if (q < 1) return;
-    setCart(prev => prev.map(item => item.id === id ? { ...item, quantity: q } : item));
+    setCart(prev => prev.map(item => (item.id === id && item.image === image) ? { ...item, quantity: q } : item));
   };
 
-  const handleUpdateCheckoutQuantity = (id: number, q: number) => {
+  const handleUpdateCheckoutQuantity = (id: number, image: string, q: number) => {
     if (q < 1) return;
-    setCheckoutItems(prev => prev.map(item => item.id === id ? { ...item, quantity: q } : item));
+    setCheckoutItems(prev => prev.map(item => (item.id === id && item.image === image) ? { ...item, quantity: q } : item));
   };
 
   const handleSearch = (query: string) => {
